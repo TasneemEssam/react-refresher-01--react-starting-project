@@ -1,9 +1,8 @@
 import React from "react";
-
-
 import Card from '../../shared/components/UIElements/Card';
 import './PlaceList.css'
 import PlaceItem from "./PlaceItem";
+import Button from "../../shared/components/FormElements/Button";
 
 const PlaceList = props => {
 // i need to check if my items prop should be in array of places, if the length of that equal to 0 to show that there is no places found so also
@@ -13,7 +12,7 @@ const PlaceList = props => {
         <div className="place-list center"> 
             <Card>
                 <h2>No places found. Maybe create one?</h2>
-                <button>Share Place</button>
+                <Button to="/places/new">Share Place</Button>
 
             </Card>
 
