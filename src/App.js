@@ -1,7 +1,7 @@
 // here i import BrowserRouter and renamed as Router from package called react
 // the route component used to root as JS code
 // switch component is cann be wrapped arount the root definitions
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   BrowserRouter as Router,
   Route,
@@ -15,16 +15,25 @@ import MainNavigation from './shared/components/Navigation/MainNavigation';
 import UserPlaces from './places/pages/UserPlaces';
 import UpdatePlace from './places/pages/UpdatePlace';
 import Auth from './user/pages/Auth';
+import { AuthContext } from './shared/context/auth-context';
+
 
 const App = () => {
-//here we caan used tht router in app component as root JS element
-//whenever i refresch my port /3000 and if i tried to write /3000/anything at the end it will give me the same route due to 
-// by default this path is treated as a filter, which means any path that start with this "path="/">" will render users
-// by seting the "path="/" exact" it means the exact path of the user as whatever i am gonna add after the slash it won't get the same thing
-  return (
-    <Router>
-      <MainNavigation />
-      <main>
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const login = useCallback(() => {
+    setIsLoggedIn(true);
+  }, []);
+
+  const logout = useCallback(() => {
+    setIsLoggedIn(false);
+  }, []);
+
+
+  let routes;
+    if (isLoggedIn){
+      routes = (
         <Switch>
           <Route path="/" exact>
             <Users />
@@ -33,18 +42,45 @@ const App = () => {
             <UserPlaces />
           </Route>
           <Route path="/places/new" exact>
-            <NewPlace />
+              <NewPlace />
           </Route>
           <Route path="/places/:placeId">
-            <UpdatePlace />
-          </Route>
-          <Route path="/auth">
-            <Auth />
+              <UpdatePlace />
           </Route>
           <Redirect to="/" />
         </Switch>
-      </main>
-    </Router>
+      );
+    }else{
+      routes = (
+        <Switch>
+          <Route path="/" exact>
+            <Users />
+          </Route>
+          <Route path="/:userId/places" exact>
+            <UserPlaces />
+          </Route>
+          <Route path="/auth">
+              <Auth />
+          </Route>
+          <Redirect to="/auth" />
+        </Switch>
+      );
+    }
+//here we caan used tht router in app component as root JS element
+//whenever i refresch my port /3000 and if i tried to write /3000/anything at the end it will give me the same route due to 
+// by default this path is treated as a filter, which means any path that start with this "path="/">" will render users
+// by seting the "path="/" exact" it means the exact path of the user as whatever i am gonna add after the slash it won't get the same thing
+  return (
+    <AuthContext.Provider 
+      value={{isLoggedIn: isLoggedIn, login: login, logout:logout}}
+      >
+      <Router>
+        <MainNavigation />
+        <main>
+            {routes}
+        </main>
+      </Router>
+    </AuthContext.Provider>
   );
 };
 // redirect is self-closing component
